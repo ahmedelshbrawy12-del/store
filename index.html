@@ -53,9 +53,12 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--ac);outlin
 .wrap{overflow-x:auto}
 @media(max-width:1100px){.g2,.pos{grid-template-columns:1fr}aside{width:165px;padding:12px 8px}nav a{padding:9px 10px;font-size:13px;gap:8px}.lg{font-size:14px}.gs{width:150px}}@media(max-width:700px){.app{flex-direction:column}aside{width:100%;height:auto;position:static;border-inline-end:0;border-bottom:1px solid var(--bd)}.lg{margin-bottom:10px}nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}nav a{white-space:nowrap;margin:0;flex-shrink:0}section{padding:14px}.top{flex-wrap:wrap}.gs{flex:1;width:auto}}
 @media print{body>*:not(#rc){display:none!important}#rc{display:block!important;width:80mm;color:#000;background:#fff;font-size:12px;padding:4mm}#rc table td,#rc table th{border-color:#000;color:#000;padding:2px}}
+.app.nonav>aside{display:none}
+#nb{width:42px;height:38px;padding:0;font-size:20px;line-height:1;flex-shrink:0;background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+#tp{width:100%;margin-top:10px;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(90deg,var(--ac),var(--pu));border:0;color:#fff}
 </style></head><body>
 <div class="app"><aside><div class="lg"><i>⚡</i>محلات كل شي للعدد و الأدوات الكهربائية</div><nav id="nav"></nav></aside>
-<section><div class="top"><h2 id="ttl"></h2><select id="ue" style="width:140px" onchange="swU(this.value)"></select><button class="b" onclick="scanImg(c=>{$('#gs').value=c;gsearch(1)})">📷</button><input class="gs" id="gs" placeholder="ابحث بالاسم أو الباركود…" oninput="gsearch()" onkeydown="if(event.key=='Enter')gsearch(1)" autocomplete="off"><div id="gr"></div></div><div id="main"></div></section></div>
+<section><div class="top"><button class="b" id="nb" onclick="tgNav()" title="إظهار / إخفاء القائمة">←</button><h2 id="ttl"></h2><select id="ue" style="width:140px" onchange="swU(this.value)"></select><button class="b" onclick="scanImg(c=>{$('#gs').value=c;gsearch(1)})">📷</button><input class="gs" id="gs" placeholder="ابحث بالاسم أو الباركود…" oninput="gsearch()" onkeydown="if(event.key=='Enter')gsearch(1)" autocomplete="off"><div id="gr"></div></div><div id="main"></div></section></div>
 <div id="toast"></div><div id="rc"></div>
 <script>
 const $=s=>document.querySelector(s),KEY='electro_manager_v1';
@@ -78,7 +81,10 @@ function modal(t,fs,ok,btn='حفظ'){const m=document.createElement('div');m.cla
 m.innerHTML=`<form class="md"><h3>${t}</h3>${fs.map(x=>`<label>${x.l}${x.o?`<select name="${x.k}">${x.o.map(o=>`<option value="${o[0]}">${e(o[1])}</option>`).join('')}</select>`:`<span style="display:flex;gap:6px"><input name="${x.k}" type="${x.t||'text'}" step="any" value="${e(x.v??'')}"${x.dl?' list="mdl"':''}>${x.dl?'<datalist id="mdl">'+DB.p.map(p=>`<option value="${e(p.n)}">`).join('')+'</datalist>':''}${x.scan?'<button type="button" class="b" style="white-space:nowrap" onclick="scanTo(this)">📷 مسح</button>':''}</span>`}</label>`).join('')}<div class="ac"><button class="b bp">${btn}</button><button type="button" class="b" onclick="this.closest('.mo').remove()">إلغاء</button></div></form>`;
 m.querySelector('form').onsubmit=ev=>{ev.preventDefault();const v=Object.fromEntries(new FormData(ev.target));const r=ok(v);if(r)toast(r);else{m.remove();save();render()}};document.body.appendChild(m)}
 const NAV=[['dash','الرئيسية','📊'],['prod','الأصناف والمخزون','📦'],['pos','نقطة البيع','🛒'],['cust','العملاء','👥'],['cr','الأجل والديون','⏳'],['buy','المشتريات والموردون','🚚'],['cash','الخزنة والحسابات','💰'],['ret','المرتجعات','↩️'],['stk','الجرد','🧮'],['rep','التقارير المالية','📈'],['aud','سجل العمليات','🧾'],['usr','المستخدمون والصلاحيات','🔐'],['set','النسخ والتصدير','💾']];
-const go=t=>{tab=t;render()};
+let showP=false;
+const updNb=()=>{const b=$('#nb');if(b)b.textContent=$('.app').classList.contains('nonav')?'→':'←'};
+const tgNav=()=>{$('.app').classList.toggle('nonav');updNb()};
+const go=t=>{tab=t;showP=false;$('.app').classList.add('nonav');updNb();render();window.scrollTo(0,0)};
 function render(){if(tab!='pos'&&SC)scanStop(1);if(!can(tab))tab=NAV.find(x=>can(x[0]))[0];$('#ue').innerHTML='<option value="">المالك</option>'+DB.u.map(u=>`<option value="${u.id}">${e(u.n)}</option>`).join('');$('#ue').value=DB.cu||'';$('#nav').innerHTML=NAV.filter(x=>can(x[0])).map(([k,l,i])=>`<a class="${k==tab?'on':''}" onclick="go('${k}')"><span>${i}</span><span>${l}</span></a>`).join('');
 $('#ttl').textContent=NAV.find(x=>x[0]==tab)[1];$('#main').innerHTML=V[tab]();if(tab=='pos'){pl();cartR()}}
 /* ---------- Views ---------- */
@@ -106,7 +112,7 @@ V.prod=()=>`<div class="row"><button class="b bp" onclick="addProd()">+ صنف �
 function ptab(q){q=q.toLowerCase();const r=pfind(q);
 return r.length?`<table><tr><th>الصنف</th><th>الكود</th><th>التصنيف</th><th>الوحدة</th><th>التكلفة</th><th>سعر البيع</th><th>الكمية</th><th>الحالة</th><th></th></tr>${r.map(p=>`<tr><td>${e(p.n)}<br><small class="mu">${e(p.brand)}</small></td><td>${e(p.sku)}</td><td>${e(p.cat)}</td><td>${e(p.unit)}</td><td>${f(p.cost)}</td><td>${f(p.pr)}</td><td>${f(p.q)}</td><td><span class="tg ${p.q<=0?'lo':p.q<=p.min?'wn':'ok'}">${p.q<=0?'نفد':p.q<=p.min?'منخفض':'متوفر'}</span></td><td><button class="b sm" onclick="editProd(${p.id})">تعديل</button> <button class="b sm br" onclick="delProd(${p.id})">حذف</button></td></tr>`).join('')}</table>`:'<div class="em">لا توجد أصناف. اضغط «صنف جديد» للبدء.</div>'}
 const pt=()=>$('#ptb').innerHTML=ptab($('#pq').value);
-V.pos=()=>`<div class="pos"><div class="card"><div class="row" style="margin:0"><input id="q" style="flex:1" placeholder="ابحث بالاسم أو الكود أو الباركود (Enter لإضافة الباركود)" oninput="pl()" onkeydown="key(event)"><button class="b" onclick="scanLive()">📷 مسح متواصل</button><button class="b" onclick="misc()">+ نثريات</button></div><div id="pl"></div></div>
+V.pos=()=>`<div class="pos"><div class="card"><div class="row" style="margin:0"><input id="q" style="flex:1" placeholder="ابحث بالاسم أو الكود أو الباركود (Enter لإضافة الباركود)" oninput="pl()" onkeydown="key(event)"><button class="b" onclick="scanLive()">📷 مسح متواصل</button><button class="b" onclick="misc()">+ نثريات</button></div><button class="b" id="tp" onclick="tgP()"></button><div id="pl" style="display:none"></div></div>
 <div class="card"><div class="wrap" style="max-height:34vh;overflow:auto"><table><tr><th>الصنف</th><th>السعر</th><th>الكمية</th><th>الإجمالي</th><th></th></tr><tbody id="ln"></tbody></table></div>
 <div class="row" style="margin-top:12px"><label style="flex:1">خصم<input id="disc" type="number" value="0" min="0" oninput="calc()"></label><label style="flex:1">ضريبة %<input id="tax" type="number" value="0" min="0" oninput="calc()"></label></div>
 <div class="row"><label style="flex:1">العميل<select id="cu" onchange="calc()"><option value="">عميل نقدي</option>${DB.c.map(c=>`<option value="${c.id}">${e(c.n)}</option>`).join('')}</select></label>
@@ -145,7 +151,8 @@ if(+v.pr!=p.pr){p.ph.push({t:Date.now(),o:p.pr,n:+v.pr});log(`تغيير سعر 
 Object.assign(p,{n:v.n.trim(),sku:v.sku,bc:v.bc,cat:v.cat,brand:v.brand,unit:v.unit,pr:+v.pr||0,min:+v.min||0});log('تعديل صنف: '+p.n)})}
 function delProd(i){const p=DB.p.find(x=>x.id==i);if(DB.sales.some(s=>s.items.some(x=>x.pid==i))||DB.pur.some(s=>s.items.some(x=>x.pid==i)))return toast('الصنف عليه حركات مسجلة ولا يمكن حذفه');modal('حذف «'+e(p.n)+'»؟',[],()=>{if(p.q>0)post('إلغاء رصيد: '+p.n,[['cap',p.q*p.cost,0],['inv',0,p.q*p.cost]]);DB.p=DB.p.filter(x=>x.id!=i);log('حذف صنف: '+p.n)},'تأكيد الحذف')}
 /* ---------- POS ---------- */
-function pl(){const q=($('#q').value||'').trim().toLowerCase();$('#pl').innerHTML=pfind(q).map(p=>`<div class="pc" onclick="add(${p.id})"><b>${e(p.n)}</b><small class="mu">${e(p.sku)} · متوفر ${f(p.q)}</small><span>${f(p.pr)}</span></div>`).join('')||'<p class="mu">لا توجد أصناف. أضفها من شاشة الأصناف.</p>'}
+function tgP(){showP=!showP;pl()}
+function pl(){const q=($('#q').value||'').trim().toLowerCase();const vis=showP||!!q;$('#pl').style.display=vis?'grid':'none';const tp=$('#tp');if(tp)tp.textContent=showP?'🔼 إخفاء الأصناف':'📦 عرض الأصناف والمنتجات ('+DB.p.length+')';$('#pl').innerHTML=pfind(q).map(p=>`<div class="pc" onclick="add(${p.id})"><b>${e(p.n)}</b><small class="mu">${e(p.sku)} · متوفر ${f(p.q)}</small><span>${f(p.pr)}</span></div>`).join('')||'<p class="mu">لا توجد أصناف. أضفها من شاشة الأصناف.</p>'}
 function key(ev){if(ev.key!='Enter')return;const q=ev.target.value.trim().toLowerCase(),p=DB.p.find(p=>[p.sku,p.bc].some(v=>v&&v.toLowerCase()==q));if(p){add(p.id);ev.target.value='';pl()}}
 function add(i){const p=DB.p.find(x=>x.id==i),l=cart.find(x=>x.pid==i);if(l)l.q++;else cart.push({pid:i,n:p.n,q:1,pr:p.pr,cost:p.cost});cartR()}
 const setP=(i,v)=>{cart[i].pr=Math.max(+v||0,0);if(cart[i].pr<cart[i].cost)toast('تنبيه: سعر البيع أقل من التكلفة');cartR()};
