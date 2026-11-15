@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ahmed Maher Store – نظام إدارة المحل</title>
+<title>محلات كل شي للعدد و الأدوات الكهربائية</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#07090e">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#07090e;--sd:#0b0f18;--cd:rgba(255,255,255,.045);--bd:rgba(255,255,255,.09);--tx:#e8ecf4;--mu:#8a94a8;--ac:#3b82f6;--gr:#22c55e;--rd:#ef4444;--or:#f59e0b;--pu:#8b5cf6;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -50,7 +54,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--ac);outlin
 @media(max-width:1100px){.g2,.pos{grid-template-columns:1fr}aside{width:165px;padding:12px 8px}nav a{padding:9px 10px;font-size:13px;gap:8px}.lg{font-size:14px}.gs{width:150px}}@media(max-width:700px){.app{flex-direction:column}aside{width:100%;height:auto;position:static;border-inline-end:0;border-bottom:1px solid var(--bd)}.lg{margin-bottom:10px}nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}nav a{white-space:nowrap;margin:0;flex-shrink:0}section{padding:14px}.top{flex-wrap:wrap}.gs{flex:1;width:auto}}
 @media print{body>*:not(#rc){display:none!important}#rc{display:block!important;width:80mm;color:#000;background:#fff;font-size:12px;padding:4mm}#rc table td,#rc table th{border-color:#000;color:#000;padding:2px}}
 </style></head><body>
-<div class="app"><aside><div class="lg"><i>⚡</i>Ahmed Maher Store</div><nav id="nav"></nav></aside>
+<div class="app"><aside><div class="lg"><i>⚡</i>محلات كل شي للعدد و الأدوات الكهربائية</div><nav id="nav"></nav></aside>
 <section><div class="top"><h2 id="ttl"></h2><select id="ue" style="width:140px" onchange="swU(this.value)"></select><button class="b" onclick="scanImg(c=>{$('#gs').value=c;gsearch(1)})">📷</button><input class="gs" id="gs" placeholder="ابحث بالاسم أو الباركود…" oninput="gsearch()" onkeydown="if(event.key=='Enter')gsearch(1)" autocomplete="off"><div id="gr"></div></div><div id="main"></div></section></div>
 <div id="toast"></div><div id="rc"></div>
 <script>
@@ -172,7 +176,7 @@ post('فاتورة بيع INV-'+no,[['cash',s.paid,0],['ar',s.tot-s.paid,0],['re
 cart.forEach(x=>DB.p.find(y=>y.id==x.pid).q-=x.q);
 if(c){c.bal+=s.tot-s.paid;c.tx.push({t:Date.now(),d:'فاتورة INV-'+no,dr:s.tot,cr:0});if(s.paid)c.tx.push({t:Date.now(),d:'دفعة على INV-'+no,dr:0,cr:s.paid})}
 DB.sales.push(sale);lastSale=sale;log(`بيع INV-${no} بقيمة ${f(s.tot)} (${sale.cn})`);cart=[];save();render();toast('تم حفظ الفاتورة رقم '+no)}
-function printSale(n){const s=n?DB.sales.find(x=>x.no==n):lastSale||DB.sales[DB.sales.length-1];if(!s)return toast('لا توجد فاتورة للطباعة');$('#rc').className='';$('#rc').innerHTML=`<h3 style="text-align:center;margin:0">Ahmed Maher Store</h3><p style="text-align:center;margin:2px">فاتورة رقم ${s.no} – ${dt(s.t)}<br>العميل: ${e(s.cn)}</p><table><tr><th>الصنف</th><th>ك</th><th>سعر</th><th>إجمالي</th></tr>${s.items.map(x=>`<tr><td>${e(x.n)}</td><td>${x.q}</td><td>${f(x.pr)}</td><td>${f(x.q*x.pr)}</td></tr>`).join('')}</table><hr>خصم: ${f(s.disc)} | ضريبة: ${f(s.tax)}<br><b>الإجمالي: ${f(s.tot)}</b><br>المدفوع: ${f(s.paid)} | المتبقي: ${f(s.tot-s.paid)}`;window.print()}
+function printSale(n){const s=n?DB.sales.find(x=>x.no==n):lastSale||DB.sales[DB.sales.length-1];if(!s)return toast('لا توجد فاتورة للطباعة');$('#rc').className='';$('#rc').innerHTML=`<h3 style="text-align:center;margin:0">محلات كل شي للعدد و الأدوات الكهربائية</h3><p style="text-align:center;margin:2px">فاتورة رقم ${s.no} – ${dt(s.t)}<br>العميل: ${e(s.cn)}</p><table><tr><th>الصنف</th><th>ك</th><th>سعر</th><th>إجمالي</th></tr>${s.items.map(x=>`<tr><td>${e(x.n)}</td><td>${x.q}</td><td>${f(x.pr)}</td><td>${f(x.q*x.pr)}</td></tr>`).join('')}</table><hr>خصم: ${f(s.disc)} | ضريبة: ${f(s.tax)}<br><b>الإجمالي: ${f(s.tot)}</b><br>المدفوع: ${f(s.paid)} | المتبقي: ${f(s.tot-s.paid)}`;window.print()}
 /* ---------- Customers / suppliers ---------- */
 function addParty(k){const c=k=='c';modal(c?'عميل جديد':'مورد جديد',[{k:'n',l:c?'اسم العميل':'اسم الشركة'},{k:'ph',l:'الهاتف'},{k:'ad',l:c?'العنوان':'اسم المندوب'},...(c?[{k:'lim',l:'الحد الائتماني (0 = بدون حد)',t:'number',v:0}]:[])],v=>{if(!v.n.trim())return 'اكتب الاسم';(c?DB.c:DB.s).push({id:id(),n:v.n.trim(),ph:v.ph,ad:v.ad,lim:+v.lim||0,bal:0,tx:[]});log((c?'إضافة عميل: ':'إضافة مورد: ')+v.n)})}
 function payParty(k,i){const c=k=='c',p=(c?DB.c:DB.s).find(x=>x.id==i);modal((c?'تحصيل من ':'سداد إلى ')+e(p.n),[{k:'a',l:`المبلغ (المستحق ${f(p.bal)})`,t:'number'}],v=>{const a=+v.a;if(!(a>0))return 'اكتب مبلغًا صحيحًا';if(a>p.bal+.001)return 'المبلغ أكبر من الرصيد المستحق';if(!c&&a>bal('cash'))return 'رصيد الخزنة لا يكفي';
@@ -251,7 +255,7 @@ V.set=()=>`<div class="card"><h3>النسخ الاحتياطي</h3><div class="r
 function exp(k){const D={p:[['الصنف','الكود','التصنيف','الوحدة','التكلفة','سعر البيع','الكمية'],DB.p.map(p=>[p.n,p.sku,p.cat,p.unit,p.cost,p.pr,p.q])],c:[['العميل','الهاتف','الحد الائتماني','الرصيد'],DB.c.map(c=>[c.n,c.ph,c.lim,c.bal])],s:[['المورد','الهاتف','المستحق'],DB.s.map(c=>[c.n,c.ph,c.bal])],j:[['التاريخ','البيان','الحساب','مدين','دائن'],DB.j.flatMap(j=>j.l.map(x=>[dt(j.t),j.d,AC[x[0]],x[1]||0,x[2]||0]))]}[k];box('انسخ النص والصقه في Excel أو احفظه بامتداد csv',csv(...D))}
 function restore(){box('الصق النسخة الاحتياطية هنا','',t=>{try{const o=JSON.parse(t);if(!o.p||!o.j||!o.c||!o.s)throw 0;DB=Object.assign(empty(),o);save();render();toast('تمت الاستعادة');return true}catch(x){toast('النسخة غير صالحة')}},'استعادة')}
 const bs=()=>{const a=[['الخزنة',bal('cash')],['المخزون',bal('inv')],['ذمم العملاء',bal('ar')]],net=-['rev','oth','cogs','exp','shr'].reduce((q,k)=>q+bal(k),0),l=[['ذمم الموردين',-bal('ap')],['ضريبة مستحقة',-bal('taxp')],['رأس المال',-bal('cap')],['أرباح الفترة',net]],row=r=>r.map(x=>`<div class="row"><span style="flex:1">${x[0]}</span><b>${f(x[1])}</b></div>`).join(''),sm=r=>f(r.reduce((q,x)=>q+x[1],0));return `<div class="g2" style="grid-template-columns:1fr 1fr"><div><b>الأصول</b>${row(a)}<div class="tot"><span>الإجمالي</span><span>${sm(a)}</span></div></div><div><b>الخصوم وحقوق الملكية</b>${row(l)}<div class="tot"><span>الإجمالي</span><span>${sm(l)}</span></div></div></div>`};
-function printRep(){$('#rc').className='a4';$('#rc').innerHTML='<h3>Ahmed Maher Store – التقرير المالي '+dt(Date.now())+'</h3>'+bs()+'<h4>المخزون</h4><table><tr><th>الصنف</th><th>الكمية</th><th>التكلفة</th><th>القيمة</th></tr>'+DB.p.map(p=>`<tr><td>${e(p.n)}</td><td>${f(p.q)}</td><td>${f(p.cost)}</td><td>${f(p.q*p.cost)}</td></tr>`).join('')+'</table>';window.print()}
+function printRep(){$('#rc').className='a4';$('#rc').innerHTML='<h3>محلات كل شي للعدد و الأدوات الكهربائية – التقرير المالي '+dt(Date.now())+'</h3>'+bs()+'<h4>المخزون</h4><table><tr><th>الصنف</th><th>الكمية</th><th>التكلفة</th><th>القيمة</th></tr>'+DB.p.map(p=>`<tr><td>${e(p.n)}</td><td>${f(p.q)}</td><td>${f(p.cost)}</td><td>${f(p.q*p.cost)}</td></tr>`).join('')+'</table>';window.print()}
 function openDoc(jid){const j=DB.j.find(x=>x.id==jid),m=/(INV|PUR)-(\d+)/.exec(j.d);if(m)showInv(m[1]=='INV'?'s':'p',+m[2])}
 function showInv(k,n){const d=(k=='s'?DB.sales:DB.pur).find(x=>x.no==n);if(!d)return toast('الفاتورة غير موجودة');const s=k=='s',el=document.createElement('div');el.className='mo';
 el.innerHTML=`<div class="md" style="width:640px"><h3>${s?'فاتورة بيع INV-':'فاتورة شراء PUR-'}${n}</h3><div class="row mu"><span>${dt(d.t)}</span><span>${s?'العميل':'المورد'}: ${e(s?d.cn:d.sn)}</span></div><table><tr><th>الصنف</th><th>الكمية</th><th>${s?'السعر':'التكلفة'}</th><th>الإجمالي</th><th>مرتجع</th></tr>${d.items.map(x=>{const p=s?x.pr:x.cost;return `<tr><td>${e(x.n)}</td><td>${f(x.q)}</td><td>${f(p)}</td><td>${f(x.q*p)}</td><td>${x.rq?f(x.rq):'—'}</td></tr>`}).join('')}</table>${s?`<div class="row mu" style="margin-top:10px"><span>المجموع: ${f(d.sub)}</span><span>الخصم: ${f(d.disc)}</span><span>الضريبة: ${f(d.tax)}</span></div>`:''}<div class="tot"><span>الإجمالي</span><span>${f(d.tot)}</span></div><div class="row"><span>المدفوع: <b>${f(d.paid)}</b></span><span>المتبقي: <b>${f(d.tot-d.paid)}</b></span></div><div class="ac">${s?`<button class="b bp" onclick="printSale(${n})">طباعة</button>`:''}<button class="b" onclick="this.closest('.mo').remove()">إغلاق</button></div></div>`;document.body.appendChild(el)}
@@ -281,4 +285,7 @@ function scanStop(q){if(SC&&SC.st)SC.st.getTracks().forEach(t=>t.stop());if(SC&&
 function scanImg(cb){const i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.onchange=async()=>{const fl=i.files[0];if(!fl)return;if(!('BarcodeDetector' in window))return toast('هذا المتصفح لا يدعم قراءة الباركود. افتح الملف بمتصفح Chrome');try{const r=await new BarcodeDetector().detect(await createImageBitmap(fl));if(r.length)cb(r[0].rawValue);else toast('لم أجد باركود في الصورة. صوّره أقرب وبإضاءة أفضل')}catch(x){toast('تعذر قراءة الصورة')}};i.click()}
 const scanTo=b=>scanImg(v=>{b.previousElementSibling.value=v;toast('تم مسح الباركود: '+v)});
 render();
-</script></body></html>
+</script><script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body></html>
